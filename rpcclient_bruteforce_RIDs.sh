@@ -26,7 +26,7 @@ set -euo pipefail
 TARGET=''
 CMD='queryuser'
 # ts=$(date -u +'%Y%m%dT%H%M%SZ')  # ISO 8601 basic format, UTC/Zulu time
-LOGFILE=$(date -u +'%Y%m%dT%H%M%SZ')'_'${TARGET//./_}'_rpcclient_bruteforce_RID_'$CMD'.log'
+LOGFILE=$(date -u +'%Y%m%dT%H%M%SZ')'_'${TARGET//./_}'_rpcclient_bruteforce_RIDs_'$CMD'.log'
 
 
 set +e
