@@ -27,7 +27,7 @@
 USER='USER'
 TARGET='TARGET'   # hostname or IP
 SHARE='SHARE'
-OUTPUT_FILE='rpcclient_output.log'
+OUTPUT_FILE="$(date -u +'%Y%m%dT%H%M%SZ')"'_'${TARGET//./_}'_rpcclient_output.log'
 # PASS='PASS'
 # DOMAIN=''         # e.g. DOMAIN (leave empty if not used)
 # RID='RID'
