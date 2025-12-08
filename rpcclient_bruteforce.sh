@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Short rpcclient RID enumerator (queryuser + querygroup)
 #
+# for i in $(seq 500 1100);do rpcclient -N -U "" 10.129.14.128 -c "queryuser 0x$(printf '%x\n' $i)" | grep "User Name\|user_rid\|group_rid" && echo "";done
 
 set -euo pipefail
 
