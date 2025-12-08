@@ -25,7 +25,7 @@
 #   Edit the variables below then run: ./rpcclient_oneliners.sh
 
 USER='USER'
-TARGET='TARGET'   # hostname or IP
+TARGET='10.10.10.10'   # hostname or IP
 SHARE='SHARE'
 OUTPUT_FILE="$(date -u +'%Y%m%dT%H%M%SZ')"'_'${TARGET//./_}'_rpcclient_output.log'
 # PASS='PASS'
