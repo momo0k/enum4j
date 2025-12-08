@@ -23,7 +23,7 @@
 # (See http://redsymbol.net/articles/unofficial-bash-strict-mode/)
 set -euo pipefail
 
-TARGET=''
+TARGET='10.10.10.10'
 CMD='queryuser'
 # ts=$(date -u +'%Y%m%dT%H%M%SZ')  # ISO 8601 basic format, UTC/Zulu time
 LOGFILE=$(date -u +'%Y%m%dT%H%M%SZ')'_'${TARGET//./_}'_rpcclient_bruteforce_RIDs_'$CMD'.log'
