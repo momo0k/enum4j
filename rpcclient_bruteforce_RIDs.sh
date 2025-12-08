@@ -25,12 +25,12 @@ set -euo pipefail
 
 TARGET=''
 CMD='queryuser'
-ts=$(date -u +'%Y%m%dT%H%M%SZ')  # ISO 8601 basic format, UTC/Zulu time
-LOGFILE=$ts'_'${TARGET//./_}'_rpcclient_bruteforce_RID_'$CMD'.log'
+# ts=$(date -u +'%Y%m%dT%H%M%SZ')  # ISO 8601 basic format, UTC/Zulu time
+LOGFILE=$(date -u +'%Y%m%dT%H%M%SZ')'_'${TARGET//./_}'_rpcclient_bruteforce_RID_'$CMD'.log'
 
 
 set +e
-printf '%s RID - queryuser:\n' "$ts" >> "$LOGFILE"
+# printf '%s RID - queryuser:\n' "$ts" >> "$LOGFILE"
 for i in $(seq 500 1100);do printf '%s %03x\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$i" >> "$LOGFILE"; rpcclient -N -U "" "$TARGET" -c "$CMD 0x$(printf '%x\n' $i)" >> "$LOGFILE" 2>&1 ;done
 # for i in $(seq 500 1100);do rpcclient -N -U "" "$TARGET" -c "querygroup 0x$(printf '%x\n' $i)" >> "$LOGFILE" 2>&1 ;done
 # set -e
