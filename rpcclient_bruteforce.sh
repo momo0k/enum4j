@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-TARGET=""
-LOGFILE="rpcclient_bruteforce.log"
+TARGET=''
+LOGFILE='rpcclient_bruteforce.log'
 ts=$(date -Is)
 
 printf '%s RID - queryuser:\n' "$ts" >> "$LOGFILE"
