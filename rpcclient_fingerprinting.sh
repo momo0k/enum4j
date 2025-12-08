@@ -25,15 +25,16 @@
 #   Edit the variables below then run: ./rpcclient_oneliners.sh
 
 USER='USER'
-PASS='PASS'
-DOMAIN=''         # e.g. DOMAIN (leave empty if not used)
 TARGET='TARGET'   # hostname or IP
 SHARE='SHARE'
-RID='RID'
-NAME='NAME'       # name to resolve with lookupnames
-SID='S-1-5-21-...' # SID to resolve with lookupsids
-GROUP='GROUP'     # group name for group queries
 OUTPUT_FILE='rpcclient_output.log'
+# PASS='PASS'
+# DOMAIN=''         # e.g. DOMAIN (leave empty if not used)
+# RID='RID'
+# NAME='NAME'       # name to resolve with lookupnames
+# SID='S-1-5-21-...' # SID to resolve with lookupsids
+# GROUP='GROUP'     # group name for group queries
+
 
 # Build -U value (use DOMAIN\\USER%PASS when DOMAIN is set)
 if [ -n "$DOMAIN" ]; then
@@ -51,14 +52,14 @@ cmds=(
   'getdompwinfo'                 # Get domain password policy / domain password info (useful for policy enumeration).
   'enumtrusts'                   # Enumerate domain trusts (helps map trust relationships).
   'netshareenumall'              # Enumerates all available shares.
-  'netsharegetinfo {SHARE}'      # Provides information about a specific share.
   'enumdomusers'                 # Enumerates all domain users.
-  'queryuser {RID}'              # Provides information about a specific user by RID.
   'enumdomgroups'                # Enumerates all domain groups (list of groups can reveal roles and accounts).
-  'lookupnames {NAME}'           # Resolve a name to SID(s) (useful to map names to SIDs).
-  'lookupsids {SID}'             # Resolve a SID to a name (useful to identify built-in or reserved accounts).
-  'querygroup {GROUP}'           # Query information about a specific group (replace GROUP).
-  'querygroupmem {GROUP}'        # List members of a specific group (good to find privileged accounts).
+  # 'netsharegetinfo {SHARE}'      # Provides information about a specific share.
+  # 'queryuser {RID}'              # Provides information about a specific user by RID.
+  # 'lookupnames {NAME}'           # Resolve a name to SID(s) (useful to map names to SIDs).
+  # 'lookupsids {SID}'             # Resolve a SID to a name (useful to identify built-in or reserved accounts).
+  # 'querygroup {GROUP}'           # Query information about a specific group (replace GROUP).
+  # 'querygroupmem {GROUP}'        # List members of a specific group (good to find privileged accounts).
 )
 
 # Run each command as a single rpcclient one-liner and append output.
@@ -69,12 +70,13 @@ for c in "${cmds[@]}"; do
   cmd="${cmd//\{NAME\}/$NAME}"
   cmd="${cmd//\{SID\}/$SID}"
   cmd="${cmd//\{GROUP\}/$GROUP}"
+  
+  # Get an ISO-8601 UTC timestamp
+  timestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
   # Make a short log header for readability in the output file
-  printf "\n--- rpcclient: %s ---\n" "$cmd" >> "$OUTPUT_FILE"
+  printf "\n[%s] --- rpcclient: %s ---\n" "$timestamp" "$cmd" >> "$OUTPUT_FILE"
 
   # Run rpcclient with the single command on one line and append output
   rpcclient -U "$U" "$TARGET" -c "$cmd" >> "$OUTPUT_FILE" 2>&1
 done
-
-# End of script
