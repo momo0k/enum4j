@@ -41,6 +41,7 @@ run_dig "NS records for $DOMAIN using server $TARGET" ns "$DOMAIN" @"$TARGET"
 run_dig "CHAOS TXT version.bind on $TARGET" CH TXT version.bind @"$TARGET"
 run_dig "ANY records for $DOMAIN using server $TARGET" any "$DOMAIN" @"$TARGET"
 run_dig "AXFR (zone transfer) for $DOMAIN from $TARGET" axfr "$DOMAIN" @"$TARGET"
+# maybe use +tcp
 
 echo "Wrote results to $OUTPUT_FILE"
 
