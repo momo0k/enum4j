@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Simple DNS probe script using dig
+# Usage: ./check-dns.sh TARGET DOMAIN [OUTPUT_FILE]
+# Example: ./check-dns.sh 10.10.10.10 example.com
+
+set -euo pipefail
+IFS=$'\n\t'
+
+TARGET="${1:-10.10.10.10}"
+DOMAIN="${2:-example.com}"
+OUTPUT_FILE="${3:-$(date -u +'%Y%m%dT%H%M%SZ')_${TARGET//./_}_dns.log}"
+
+# helper: timestamped log prefix
+log() {
+  printf '%s %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*"
+}
+
+# check that dig is available
+if ! command -v dig >/dev/null 2>&1; then
+  echo "ERROR: dig not found in PATH. Install bind9-dnsutils / BIND tools or use WSL/Git-Bash/Cygwin."
+  exit 2
+fi
+
+# run a dig query and annotate output
+run_dig() {
+  local desc="$1"; shift
+  log ">>> $desc" >>"$OUTPUT_FILE"
+  # Use +noall +answer for concise answers; remove if you want full output
+  dig +noall +answer "$@" >>"$OUTPUT_FILE" 2>&1 || {
+    log "dig command failed for: $desc" >>"$OUTPUT_FILE"
+  }
+  log ">>> end $desc" >>"$OUTPUT_FILE"
+  printf '\n' >>"$OUTPUT_FILE"
+}
+
+# Start fresh log (append if you'd prefer to keep previous results, change >> to >>)
+: >"$OUTPUT_FILE"
+
+# Queries
+run_dig "NS records for $DOMAIN using server $TARGET" ns "$DOMAIN" @"$TARGET"
+run_dig "CHAOS TXT version.bind on $TARGET" CH TXT version.bind @"$TARGET"
+run_dig "ANY records for $DOMAIN using server $TARGET" any "$DOMAIN" @"$TARGET"
+run_dig "AXFR (zone transfer) for $DOMAIN from $TARGET" axfr "$DOMAIN" @"$TARGET"
+
+echo "Wrote results to $OUTPUT_FILE"
+
+
+
+# POWERSHELL
+# <#
+# Usage:
+#   .\Check-Dns.ps1 -Target 10.10.10.10 -Domain example.com -OutputFile .\dns.log
+#
+# Notes:
+#  - Uses Resolve-DnsName where possible, falls back to nslookup for AXFR.
+#  - CH class (CHAOS) queries (e.g., version.bind) are not universally supported by Resolve-DnsName/nslookup on all Windows builds.
+#  - If you need exact parity with dig, install dig (BIND utils) or use WSL.
+# #>
+#
+# param(
+#   [string]$Target = "10.10.10.10",
+#   [string]$Domain = "",
+#   [string]$OutputFile = ("{0:yyyyMMddTHHmmssZ}_{1}_dns.log" -f (Get-Date).ToUniversalTime(), ($Target -replace '\.','_'))
+# )
+#
+# function Log {
+#   param($msg)
+#   $ts = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+#   "$ts $msg" | Out-File -FilePath $OutputFile -Append -Encoding utf8
+# }
+#
+# # Ensure file exists / clear
+# '' | Out-File -FilePath $OutputFile -Encoding utf8
+#
+# # NS records
+# try {
+#   Log ">>> Resolve-DnsName -Type NS -Server $Target $Domain"
+#   Resolve-DnsName -Name $Domain -Type NS -Server $Target | Out-String | ForEach-Object { Log $_ }
+#   Log ">>> end NS"
+# } catch {
+#   Log "Resolve-DnsName NS failed: $_"
+# }
+#
+# # version.bind (CHAOS class) - may not work with Resolve-DnsName
+# try {
+#   Log ">>> Try to query version.bind (CHAOS) - may be unsupported"
+#   # Resolve-DnsName doesn't support class selection; attempt TXT query for version.bind
+#   Resolve-DnsName -Name "version.bind" -Type TXT -Server $Target | Out-String | ForEach-Object { Log $_ }
+#   Log ">>> end version.bind"
+# } catch {
+#   Log "version.bind query failed: $_"
+# }
+#
+# # ANY records
+# try {
+#   Log ">>> Resolve-DnsName -Type ANY -Server $Target $Domain"
+#   Resolve-DnsName -Name $Domain -Type ANY -Server $Target | Out-String | ForEach-Object { Log $_ }
+#   Log ">>> end ANY"
+# } catch {
+#   Log "Resolve-DnsName ANY failed: $_"
+# }
+#
+# # AXFR (zone transfer) - use nslookup if available (AXFR requires server permission)
+# try {
+#   Log ">>> Attempt AXFR using nslookup (if server allows zone transfer)"
+#   $nsCmd = "nslookup -type=axfr $Domain $Target"
+#   Log "CMD: $nsCmd"
+#   $out = cmd.exe /c $nsCmd 2>&1
+#   $out | ForEach-Object { Log $_ }
+#   Log ">>> end AXFR"
+# } catch {
+#   Log "AXFR attempt failed: $_"
+# }
+#
+# Write-Host "Wrote results to $OutputFile"
