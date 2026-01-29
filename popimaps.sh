@@ -6,6 +6,7 @@ LOGFILE=$(date -u +'%Y%m%dT%H%M%SZ')'_'${TARGET//./_}'_popimaps.log'
 echo "== IMAPS scan: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$LOGFILE"
 openssl s_client -connect "${TARGET}:imaps" -crlf 2>&1 >> "$LOGFILE"
 # u may want to check curl -k 'imaps://10.10.10.10' --user name:pw -v
+# tag0 LOGIN name pw
 
 echo -e "\n== POP3S scan: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$LOGFILE"
 openssl s_client -connect "${TARGET}:pop3s" -crlf 2>&1 >> "$LOGFILE"
