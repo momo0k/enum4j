@@ -1,0 +1,5 @@
+sudo nmap -p1521 -sV 10.10.10.10 --open --script oracle-sid-brute
+./odat.py all -s 10.10.10.10
+# sqlplus name/password10.10.10.10/XE #as someone
+# cannot open shared object file: No such file or directory -> sudo sh -c "echo /usr/lib/oracle/12.2/client64/lib > /etc/ld.so.conf.d/oracle-instantclient.conf";sudo ldconfig
+# https://docs.oracle.com/cd/E11882_01/server.112/e41085/sqlqraa001.htm#SQLQR985
