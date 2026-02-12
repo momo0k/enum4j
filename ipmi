@@ -1,0 +1,1 @@
+sudo nmap -sU --script ipmi-version -p 623 10.10.10.10 -oN ipmi_check
