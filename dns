@@ -114,3 +114,15 @@ echo "Wrote results to $OUTPUT_FILE"
 # }
 #
 # Write-Host "Wrote results to $OutputFile"
+
+
+
+#not TODO
+
+# - DNS Tunneling (e.g. dnscat2, iodine)
+# - Zombie Domains / "Dead Domain Resurrection"
+# - DGA "Domain Generation Algorithms" (e.g. conficker worm) per nighttime
+# - Sec Fast-Flux 
+# - Redirecting: Cache Poisoning ( e.g. Eugene Kashpureff & Dan Kaminsky), Registrar Compromise / "Hijacking" (e.g. GoDaddy or Namecheap), IDN Homograph Attacks 
+# - Amplification Attack
+# - Random Subdomain Flooding "NXDomain Attacks" 
